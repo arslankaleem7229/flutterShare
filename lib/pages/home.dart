@@ -23,6 +23,7 @@ class _HomeState extends State<Home> {
     super.initState();
 
     pageController = PageController();
+
     googleSignIn.onCurrentUserChanged.listen((account) {
       handleSignIn(account);
     }, onError: (err) {
@@ -73,30 +74,32 @@ class _HomeState extends State<Home> {
 
   Widget buildAuthScreen() {
     return Scaffold(
-        body: PageView(
-          children: [
-            Timeline(),
-            ActivityFeed(),
-            Upload(),
-            Search(),
-            Profile(),
-          ],
-          controller: pageController,
-          onPageChanged: onPageChanged,
-          // physics: NeverScrollableScrollPhysics(),
-        ),
-        bottomNavigationBar: CupertinoTabBar(
-          currentIndex: pageIndex,
-          onTap: changePageIndex,
-          activeColor: Theme.of(context).primaryColor,
-          items: [
-            bottomNavigationBarItem(Icon(Icons.whatshot)),
-            bottomNavigationBarItem(Icon(Icons.notifications)),
-            bottomNavigationBarItem(Icon(Icons.photo_camera, size: 35.0)),
-            bottomNavigationBarItem(Icon(Icons.search)),
-            bottomNavigationBarItem(Icon(Icons.account_circle)),
-          ],
-        ));
+      appBar: AppBar(),
+      body: PageView(
+        children: [
+          Timeline(),
+          ActivityFeed(),
+          Upload(),
+          Search(),
+          Profile(),
+        ],
+        controller: pageController,
+        onPageChanged: onPageChanged,
+        // physics: NeverScrollableScrollPhysics(),
+      ),
+      bottomNavigationBar: CupertinoTabBar(
+        currentIndex: pageIndex,
+        onTap: changePageIndex,
+        activeColor: Theme.of(context).primaryColor,
+        items: [
+          bottomNavigationBarItem(Icon(Icons.whatshot)),
+          bottomNavigationBarItem(Icon(Icons.notifications)),
+          bottomNavigationBarItem(Icon(Icons.photo_camera, size: 35.0)),
+          bottomNavigationBarItem(Icon(Icons.search)),
+          bottomNavigationBarItem(Icon(Icons.account_circle)),
+        ],
+      ),
+    );
   }
 
   login() {
