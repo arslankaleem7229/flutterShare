@@ -5,8 +5,10 @@ AppBar header(
     String title,
     double size,
     String family,
-    bool isAppTitle = false}) {
+    bool isAppTitle = false,
+    bool removeBackButton = true}) {
   return AppBar(
+    automaticallyImplyLeading: removeBackButton ? false : true,
     title: Text(
       isAppTitle ? 'FlutterShare' : title,
       textAlign: TextAlign.center,

@@ -1,14 +1,21 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttershare/models/user.dart';
 import 'package:fluttershare/pages/activity_feed.dart';
+import 'package:fluttershare/pages/create_account.dart';
 import 'package:fluttershare/pages/profile.dart';
 import 'package:fluttershare/pages/search.dart';
+// ignore: unused_import
 import 'package:fluttershare/pages/timeline.dart';
 import 'package:fluttershare/pages/upload.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+final userAuth = FirebaseFirestore.instance.collection('users');
 final GoogleSignIn googleSignIn = GoogleSignIn();
 bool isAuth = false;
+final timeStamp = DateTime.now();
+User currentUser;
 
 class Home extends StatefulWidget {
   @override
@@ -17,12 +24,12 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   PageController pageController;
+
   int pageIndex = 0;
   @override
   void initState() {
     super.initState();
     pageController = PageController();
-
     googleSignIn.onCurrentUserChanged.listen((account) {
       handleSignIn(account);
     }, onError: (err) {
@@ -55,18 +62,55 @@ class _HomeState extends State<Home> {
     );
   }
 
+  login() {
+    googleSignIn.signIn();
+  }
+
+  logout() {
+    googleSignIn.signOut();
+  }
+
   handleSignIn(GoogleSignInAccount account) {
     if (account != null) {
-      print(account);
+      createUserInFirestore();
+
       setState(() {
         isAuth = true;
       });
     } else {
-      print('Fucked Again : $isAuth');
       setState(() {
         isAuth = false;
       });
     }
+  }
+
+  createUserInFirestore() async {
+    //1). Check if user exists in users collection in database (according to their id).
+
+    final GoogleSignInAccount user = googleSignIn.currentUser;
+    DocumentSnapshot document = await userAuth.doc(user.id).get();
+
+    //2). if the user doesn't exist, then we want to take them to the create account page.
+    if (!document.exists) {
+      final username = await Navigator.push(
+          context, MaterialPageRoute(builder: (context) => CreateAccount()));
+
+      //3). get username from create account user it to make new user document in users collection
+
+      userAuth.doc(user.id).set({
+        "id": user.id,
+        "email": user.email,
+        "photoURL": user.photoUrl,
+        "displayname": user.displayName,
+        "username": username,
+        "bio": "N/A",
+        "timestamp": timeStamp,
+      });
+      document = await userAuth.doc(user.id).get();
+    }
+    currentUser = User.fromDocument(document);
+    print(currentUser);
+    print(currentUser.email);
   }
 
   BottomNavigationBarItem bottomNavigationBarItem(Icon icon) {
@@ -77,7 +121,11 @@ class _HomeState extends State<Home> {
     return Scaffold(
       body: PageView(
         children: [
-          Timeline(),
+          // Timeline(),
+          RaisedButton(
+            onPressed: logout,
+            child: Text('Logout'),
+          ),
           ActivityFeed(),
           Upload(),
           Search(),
@@ -100,14 +148,6 @@ class _HomeState extends State<Home> {
         ],
       ),
     );
-  }
-
-  login() {
-    googleSignIn.signIn();
-  }
-
-  logout() {
-    googleSignIn.signOut();
   }
 
   Scaffold buildUnAuthScreen() {
@@ -138,9 +178,7 @@ class _HomeState extends State<Home> {
               ),
             ),
             GestureDetector(
-              onTap: () {
-                login();
-              },
+              onTap: login,
               child: Container(
                 width: 260.0,
                 height: 60.0,

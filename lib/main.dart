@@ -9,39 +9,18 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      // Initialize FlutterFire
-      future: Firebase.initializeApp(),
-      builder: (context, snapshot) {
-        // Check for errors
-        if (snapshot.hasError) {
-          print('Error during firestore');
-        }
+    // Initialize FlutterFire
+    Firebase.initializeApp();
 
-        // Once complete, show your application
-        if (snapshot.connectionState == ConnectionState.done) {
-          return MaterialApp(
-            title: 'FlutterShare',
-            debugShowCheckedModeBanner: false,
-            theme: ThemeData(
-              accentColor: Colors.teal,
-              primarySwatch: Colors.purple,
-            ),
-            home: Home(),
-          );
-        }
-
-        // Otherwise, show something whilst waiting for initialization to complete
-        return MaterialApp(
-          title: 'FlutterShare',
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            accentColor: Colors.teal,
-            primarySwatch: Colors.purple,
-          ),
-          home: Home(),
-        );
-      },
+    // Once complete, show your application
+    return MaterialApp(
+      title: 'FlutterShare',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        accentColor: Colors.teal,
+        primarySwatch: Colors.purple,
+      ),
+      home: Home(),
     );
   }
 }
