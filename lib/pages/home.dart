@@ -16,9 +16,13 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  PageController pageController;
+  int pageIndex = 0;
   @override
   void initState() {
     super.initState();
+
+    pageController = PageController();
     googleSignIn.onCurrentUserChanged.listen((account) {
       handleSignIn(account);
     }, onError: (err) {
@@ -29,6 +33,24 @@ class _HomeState extends State<Home> {
     }).catchError((err) {
       print('Error SigninIn : $err');
     });
+  }
+
+  @override
+  void dispose() {
+    pageController.dispose();
+    super.dispose();
+  }
+
+  onPageChanged(int pageIndex) {
+    setState(() {
+      this.pageIndex = pageIndex;
+    });
+  }
+
+  changePageIndex(int pageIndex) {
+    pageController.jumpToPage(
+      pageIndex,
+    );
   }
 
   handleSignIn(GoogleSignInAccount account) {
@@ -45,18 +67,36 @@ class _HomeState extends State<Home> {
     }
   }
 
+  BottomNavigationBarItem bottomNavigationBarItem(Icon icon) {
+    return BottomNavigationBarItem(icon: icon);
+  }
+
   Widget buildAuthScreen() {
     return Scaffold(
-      body: PageView(
-        children: [
-          Timeline(),
-          ActivityFeed(),
-          Upload(),
-          Search(),
-          Profile(),
-        ],
-      ),
-    );
+        body: PageView(
+          children: [
+            Timeline(),
+            ActivityFeed(),
+            Upload(),
+            Search(),
+            Profile(),
+          ],
+          controller: pageController,
+          onPageChanged: onPageChanged,
+          // physics: NeverScrollableScrollPhysics(),
+        ),
+        bottomNavigationBar: CupertinoTabBar(
+          currentIndex: pageIndex,
+          onTap: changePageIndex,
+          activeColor: Theme.of(context).primaryColor,
+          items: [
+            bottomNavigationBarItem(Icon(Icons.whatshot)),
+            bottomNavigationBarItem(Icon(Icons.notifications)),
+            bottomNavigationBarItem(Icon(Icons.photo_camera, size: 35.0)),
+            bottomNavigationBarItem(Icon(Icons.search)),
+            bottomNavigationBarItem(Icon(Icons.account_circle)),
+          ],
+        ));
   }
 
   login() {
