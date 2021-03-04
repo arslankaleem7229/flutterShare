@@ -21,7 +21,6 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-
     pageController = PageController();
 
     googleSignIn.onCurrentUserChanged.listen((account) {
@@ -49,8 +48,10 @@ class _HomeState extends State<Home> {
   }
 
   changePageIndex(int pageIndex) {
-    pageController.jumpToPage(
+    pageController.animateToPage(
       pageIndex,
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
     );
   }
 
@@ -74,7 +75,6 @@ class _HomeState extends State<Home> {
 
   Widget buildAuthScreen() {
     return Scaffold(
-      appBar: AppBar(),
       body: PageView(
         children: [
           Timeline(),
