@@ -127,7 +127,9 @@ class _HomeState extends State<Home> {
             child: Text('Logout'),
           ),
           ActivityFeed(),
-          Upload(),
+          Upload(
+            currentUser: currentUser,
+          ),
           Search(),
           Profile(),
         ],

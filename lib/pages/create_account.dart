@@ -101,6 +101,7 @@ class _CreateAccountState extends State<CreateAccount> {
                     fontWeight: FontWeight.bold,
                     fontSize: 20.0,
                   ),
+                  
                   textAlign: TextAlign.center,
                 ),
               ),
