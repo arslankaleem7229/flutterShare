@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttershare/models/user.dart';
@@ -11,7 +12,10 @@ import 'package:fluttershare/pages/timeline.dart';
 import 'package:fluttershare/pages/upload.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-final userAuth = FirebaseFirestore.instance.collection('users');
+final userRef = FirebaseFirestore.instance.collection('users');
+final postRef = FirebaseFirestore.instance.collection('users');
+
+final Reference storageReference = FirebaseStorage.instance.ref();
 final GoogleSignIn googleSignIn = GoogleSignIn();
 bool isAuth = false;
 final timeStamp = DateTime.now();
@@ -88,7 +92,7 @@ class _HomeState extends State<Home> {
     //1). Check if user exists in users collection in database (according to their id).
 
     final GoogleSignInAccount user = googleSignIn.currentUser;
-    DocumentSnapshot document = await userAuth.doc(user.id).get();
+    DocumentSnapshot document = await userRef.doc(user.id).get();
 
     //2). if the user doesn't exist, then we want to take them to the create account page.
     if (!document.exists) {
@@ -97,7 +101,7 @@ class _HomeState extends State<Home> {
 
       //3). get username from create account user it to make new user document in users collection
 
-      userAuth.doc(user.id).set({
+      userRef.doc(user.id).set({
         "id": user.id,
         "email": user.email,
         "photoURL": user.photoUrl,
@@ -106,7 +110,7 @@ class _HomeState extends State<Home> {
         "bio": "N/A",
         "timestamp": timeStamp,
       });
-      document = await userAuth.doc(user.id).get();
+      document = await userRef.doc(user.id).get();
     }
     currentUser = User.fromDocument(document);
     print(currentUser);

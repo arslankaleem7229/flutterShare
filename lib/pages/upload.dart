@@ -1,10 +1,19 @@
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttershare/models/user.dart';
+// ignore: unused_import
 import 'package:fluttershare/widgets/progress.dart';
+import 'package:geolocator/geolocator.dart';
+import 'home.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:image/image.dart' as IM;
+import 'package:path_provider/path_provider.dart';
+import 'package:uuid/uuid.dart';
+
+final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
 
 class Upload extends StatefulWidget {
   final User currentUser;
@@ -15,10 +24,29 @@ class Upload extends StatefulWidget {
 }
 
 class _UploadState extends State<Upload> {
-  PickedFile imageFile;
+  Position _currentPosition;
+  String _currentAddress;
+  TextEditingController captionController = TextEditingController();
+  TextEditingController locationController = TextEditingController();
+  File imageFile;
   double heightofScreen;
+  String postID = Uuid().v4();
   double widthofScreen;
   bool isUploading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _getCurrentLocation();
+  }
+
+  @override
+  void dispose() {
+    locationController.dispose();
+    captionController.dispose();
+
+    super.dispose();
+  }
 
   Future getImage(int type) async {
     PickedFile pickedImage = await ImagePicker().getImage(
@@ -29,12 +57,39 @@ class _UploadState extends State<Upload> {
     return pickedImage;
   }
 
+  _getCurrentLocation() {
+    geolocator
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
+        .then((Position position) {
+      setState(() {
+        _currentPosition = position;
+      });
+      _getAddressFromLatLng();
+    }).catchError((e) {
+      print(e);
+    });
+  }
+
+  _getAddressFromLatLng() async {
+    try {
+      List<Placemark> p = await geolocator.placemarkFromCoordinates(
+          _currentPosition.latitude, _currentPosition.longitude);
+      Placemark place = p[0];
+      setState(() {
+        _currentAddress =
+            "${place.locality}, ${place.administrativeArea}, ${place.country}";
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
   handleImagefromCamera() async {
     Navigator.pop(context);
     final tempfile = await getImage(1);
     print(tempfile);
     setState(() {
-      imageFile = tempfile;
+      imageFile = File(tempfile.path);
     });
   }
 
@@ -44,7 +99,7 @@ class _UploadState extends State<Upload> {
     print(tempfile);
 
     setState(() {
-      imageFile = tempfile;
+      imageFile = File(tempfile.path);
     });
   }
 
@@ -110,16 +165,63 @@ class _UploadState extends State<Upload> {
     );
   }
 
+  compressImage() async {
+    final tempDir = await getTemporaryDirectory();
+    final tempPath = tempDir.path;
+    IM.Image tempImageFile = IM.decodeImage(imageFile.readAsBytesSync());
+    final compressedImageFile = File('$tempPath/img_$postID.jpg')
+      ..writeAsBytesSync(IM.encodeJpg(tempImageFile, quality: 85));
+    setState(() {
+      imageFile = compressedImageFile;
+    });
+  }
+
   clearImage() {
     setState(() {
       imageFile = null;
     });
   }
 
-  handleSubmit() {
+  handleSubmit() async {
     setState(() {
       isUploading = true;
     });
+    await compressImage();
+    // ignore: unused_local_variable
+    String mediaURL = await uploadImage(imageFile);
+    createPostInFirestore(
+      mediaURL: mediaURL,
+      location: locationController.text,
+      description: captionController.text,
+    );
+    locationController.clear();
+    captionController.clear();
+    setState(() {
+      imageFile = null;
+      postID = Uuid().v4();
+      isUploading = false;
+    });
+  }
+
+  createPostInFirestore(
+      {@required String mediaURL, String description, String location}) {
+    postRef.doc(widget.currentUser.id).collection("userPosts").doc(postID).set({
+      "postId": postID,
+      "ownerId": widget.currentUser.id,
+      "username": widget.currentUser.username,
+      "mediaURL": mediaURL,
+      "description": description,
+      "location": location,
+      "timestamp": timeStamp,
+      "likes": {}
+    });
+  }
+
+  Future<String> uploadImage(_imageFile) async {
+    UploadTask uploadTask =
+        storageReference.child('post_$postID.jpg').putFile(_imageFile);
+    String downloadURL = await (await uploadTask).ref.getDownloadURL();
+    return downloadURL;
   }
 
   Scaffold buildUploadForm() {
@@ -170,6 +272,7 @@ class _UploadState extends State<Upload> {
             ),
             title: Container(
               child: TextField(
+                controller: captionController,
                 decoration: InputDecoration(
                   hintText: 'Write a Caption ... ',
                   border: InputBorder.none,
@@ -186,6 +289,7 @@ class _UploadState extends State<Upload> {
             ),
             title: Container(
               child: TextField(
+                controller: locationController,
                 onChanged: (location) {},
                 decoration: InputDecoration(
                   hintText: 'Current Location',
@@ -202,7 +306,11 @@ class _UploadState extends State<Upload> {
                   Icons.my_location,
                   color: Colors.white,
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  setState(() {
+                    locationController.text = _currentAddress;
+                  });
+                },
                 color: Colors.blueAccent,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.0)),
