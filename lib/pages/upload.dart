@@ -40,14 +40,6 @@ class _UploadState extends State<Upload> {
     _getCurrentLocation();
   }
 
-  @override
-  void dispose() {
-    locationController.dispose();
-    captionController.dispose();
-
-    super.dispose();
-  }
-
   Future getImage(int type) async {
     PickedFile pickedImage = await ImagePicker().getImage(
         source: type == 1 ? ImageSource.camera : ImageSource.gallery,

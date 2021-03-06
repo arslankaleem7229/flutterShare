@@ -1,12 +1,126 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttershare/models/user.dart';
+import 'package:fluttershare/pages/home.dart';
 import 'package:fluttershare/widgets/header.dart';
+import 'package:fluttershare/widgets/progress.dart';
 
 class Profile extends StatefulWidget {
+  final profileId;
+  Profile({@required this.profileId});
   @override
   _ProfileState createState() => _ProfileState();
 }
 
 class _ProfileState extends State<Profile> {
+  buildCountColumn({@required String label, @required int count}) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          count.toString(),
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            fontSize: 22.0,
+          ),
+        ),
+        Container(
+          margin: EdgeInsets.only(top: 4.0),
+          child: Text(
+            label,
+            style: TextStyle(fontWeight: FontWeight.w400, fontSize: 15.0),
+          ),
+        )
+      ],
+    );
+  }
+
+  buildProfileHeader() {
+    return FutureBuilder(
+        future: userRef.doc(widget.profileId).get(),
+        builder: (context, snapshots) {
+          if (!snapshots.hasData) {
+            return circularProgress();
+          } else {
+            User user = User.fromDocument(snapshots.data);
+            // print(user?.id);
+            return Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: Colors.grey,
+                        radius: 40.0,
+                        backgroundImage: CachedNetworkImageProvider(
+                          user.photoURL,
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                buildCountColumn(label: "posts", count: 0),
+                                buildCountColumn(label: "followers", count: 0),
+                                buildCountColumn(label: "following", count: 0),
+                              ],
+                            ),
+                            Row(
+                              // crossAxisAlignment: CrossAxisAlignment.stretch,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                RaisedButton(
+                                  onPressed: () {},
+                                  child: Text('Edit Profile'),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    padding: EdgeInsets.only(top: 12.0),
+                    child: Text(
+                      user.displayName.toUpperCase(),
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16.0),
+                    ),
+                  ),
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    padding: EdgeInsets.only(top: 12.0),
+                    child: Text(
+                      user.username,
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16.0),
+                    ),
+                  ),
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    padding: EdgeInsets.only(top: 12.0),
+                    child: Text(
+                      user.bio,
+                      style: TextStyle(fontSize: 16.0),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -14,6 +128,11 @@ class _ProfileState extends State<Profile> {
         context: context,
         isAppTitle: false,
         title: 'Profile',
+      ),
+      body: ListView(
+        children: [
+          buildProfileHeader(),
+        ],
       ),
     );
   }
