@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttershare/models/user.dart';
+import 'package:fluttershare/pages/edit_profile.dart';
 import 'package:fluttershare/pages/home.dart';
 import 'package:fluttershare/widgets/header.dart';
 import 'package:fluttershare/widgets/progress.dart';
@@ -13,6 +14,8 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+  final String currentUserId = currentUser?.id;
+
   buildCountColumn({@required String label, @required int count}) {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -35,6 +38,57 @@ class _ProfileState extends State<Profile> {
         )
       ],
     );
+  }
+
+  editProfile() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditProfile(
+          currentUserId: currentUserId,
+        ),
+      ),
+    );
+  }
+
+  buildButton({@required String text, @required Function function}) {
+    return Container(
+      padding: EdgeInsets.only(top: 2.0),
+      child: FlatButton(
+        onPressed: function,
+        child: Container(
+          width: 260.0,
+          height: 27.0,
+          child: Text(
+            text,
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: Colors.blue,
+            border: Border.all(
+              color: Colors.blue,
+            ),
+            borderRadius: BorderRadius.circular(5.0),
+          ),
+        ),
+      ),
+    );
+  }
+
+  buildPerformButton() {
+    bool isProfileOwner = currentUserId == widget.profileId;
+    if (isProfileOwner) {
+      return buildButton(
+        text: "Edit Profile",
+        function: editProfile,
+      );
+    }
+
+    return Text('Profile Button');
   }
 
   buildProfileHeader() {
@@ -77,10 +131,7 @@ class _ProfileState extends State<Profile> {
                               // crossAxisAlignment: CrossAxisAlignment.stretch,
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                RaisedButton(
-                                  onPressed: () {},
-                                  child: Text('Edit Profile'),
-                                ),
+                                buildPerformButton(),
                               ],
                             ),
                           ],
@@ -92,23 +143,24 @@ class _ProfileState extends State<Profile> {
                     alignment: Alignment.centerLeft,
                     padding: EdgeInsets.only(top: 12.0),
                     child: Text(
-                      user.displayName.toUpperCase(),
+                      user.displayName,
                       style: TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 16.0),
                     ),
                   ),
                   Container(
                     alignment: Alignment.centerLeft,
-                    padding: EdgeInsets.only(top: 12.0),
+                    padding: EdgeInsets.only(top: 5.0),
                     child: Text(
                       user.username,
                       style: TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 16.0),
+                      textAlign: TextAlign.left,
                     ),
                   ),
                   Container(
                     alignment: Alignment.centerLeft,
-                    padding: EdgeInsets.only(top: 12.0),
+                    padding: EdgeInsets.only(top: 5.0),
                     child: Text(
                       user.bio,
                       style: TextStyle(fontSize: 16.0),
