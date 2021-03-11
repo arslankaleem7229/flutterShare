@@ -14,6 +14,7 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+  User user;
   final String currentUserId = currentUser?.id;
 
   buildCountColumn({@required String label, @required int count}) {
@@ -48,7 +49,9 @@ class _ProfileState extends State<Profile> {
           currentUserId: currentUserId,
         ),
       ),
-    );
+    ).then((value) {
+      setState(() {});
+    });
   }
 
   buildButton({@required String text, @required Function function}) {
@@ -98,7 +101,7 @@ class _ProfileState extends State<Profile> {
           if (!snapshots.hasData) {
             return circularProgress();
           } else {
-            User user = User.fromDocument(snapshots.data);
+            user = User.fromDocument(snapshots.data);
             // print(user?.id);
             return Padding(
               padding: EdgeInsets.all(16.0),
