@@ -13,7 +13,7 @@ import 'package:fluttershare/pages/upload.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 final userRef = FirebaseFirestore.instance.collection('users');
-final postRef = FirebaseFirestore.instance.collection('users');
+final postRef = FirebaseFirestore.instance.collection('posts');
 
 final Reference storageReference = FirebaseStorage.instance.ref();
 final GoogleSignIn googleSignIn = GoogleSignIn();
@@ -125,11 +125,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       body: PageView(
         children: [
-          // Timeline(),
-          RaisedButton(
-            onPressed: logout,
-            child: Text('Logout'),
-          ),
+          Timeline(),
           ActivityFeed(),
           Upload(
             currentUser: currentUser,

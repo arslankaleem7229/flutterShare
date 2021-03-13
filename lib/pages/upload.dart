@@ -179,7 +179,6 @@ class _UploadState extends State<Upload> {
       isUploading = true;
     });
     await compressImage();
-    // ignore: unused_local_variable
     String mediaURL = await uploadImage(imageFile);
     createPostInFirestore(
       mediaURL: mediaURL,
@@ -253,7 +252,9 @@ class _UploadState extends State<Upload> {
               height: heightofScreen * 0.3,
               decoration: BoxDecoration(
                 image: DecorationImage(
-                    image: FileImage(File(imageFile.path)), fit: BoxFit.cover),
+                  image: FileImage(File(imageFile.path)),
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
           ),

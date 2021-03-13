@@ -30,7 +30,8 @@ dependencies:
   location_permissions: ^2.0.0+1
   uuid: ^2.0.0
   image: ^2.0.7
-  animator: 0.1.4
+  animator: ^3.0.0
+  states_rebuilder: ^4.0.0
   provider: ^4.3.2+2
   cupertino_icons: ^0.1.2
   path_provider: ^0.5.0+1
@@ -61,3 +62,4 @@ flutter:
     - assets/images/search.svg
     - assets/images/activity_feed.svg
     - assets/images/no_content.svg
+    - assets/instagram_like.flr
