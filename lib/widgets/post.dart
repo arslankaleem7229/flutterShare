@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttershare/models/user.dart';
+import 'package:fluttershare/pages/comments.dart';
 import 'package:fluttershare/pages/home.dart';
 import 'package:fluttershare/widgets/custom_image.dart';
 import 'package:fluttershare/widgets/progress.dart';
@@ -150,11 +151,10 @@ class _PostState extends State<Post> {
           cachedNetworkImage(mediaUrl),
           showHeart
               ? Animator(
-                  duration: Duration(microseconds: 300),
                   tween: Tween(begin: 0.8, end: 1.4),
                   curve: Curves.elasticOut,
                   cycles: 0,
-                  builder: (anim) => Transform.scale(
+                  builder: (context, anim, child) => Transform.scale(
                     scale: anim.value,
                     child: Icon(
                       Icons.favorite,
@@ -197,7 +197,17 @@ class _PostState extends State<Post> {
                 size: 28.0,
                 color: Colors.blue[900],
               ),
-              onTap: () => print("Comment Button"),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Comments(
+                        postId: postId,
+                        postOwnerId: ownerId,
+                        postMediaUrl: mediaUrl,
+                      ),
+                    ));
+              },
             ),
           ],
         ),
@@ -237,6 +247,37 @@ class _PostState extends State<Post> {
     );
   }
 
+  addLikestoActivityFeed() {
+    bool isNotPostOwner = _currentUserId != ownerId;
+    if (isNotPostOwner) {
+      activityFeedRef.doc(ownerId).collection('feedItems').doc(postId).set({
+        "type": "like",
+        "username": currentUser.username,
+        "userId": currentUser.id,
+        "userProfileImg": currentUser.photoURL,
+        "postId": postId,
+        "mediaUrl": mediaUrl,
+        "timeStamp": DateTime.now(),
+      });
+    }
+  }
+
+  removeLikesFromActivityFeed() {
+    bool isNotPostOwner = _currentUserId != ownerId;
+    if (isNotPostOwner) {
+      activityFeedRef
+          .doc(ownerId)
+          .collection('feedItems')
+          .doc(postId)
+          .get()
+          .then((document) {
+        if (document.exists) {
+          document.reference.delete();
+        }
+      });
+    }
+  }
+
   handleLikePost() {
     bool _isLiked = likes[_currentUserId] == true;
 
@@ -246,6 +287,7 @@ class _PostState extends State<Post> {
           .collection('userPosts')
           .doc(postId)
           .update({'likes.$_currentUserId': false});
+      removeLikesFromActivityFeed();
       setState(() {
         likeCount -= 1;
         isLiked = false;
@@ -257,6 +299,8 @@ class _PostState extends State<Post> {
           .collection('userPosts')
           .doc(postId)
           .update({'likes.$_currentUserId': true});
+      addLikestoActivityFeed();
+
       setState(() {
         likeCount += 1;
         isLiked = true;

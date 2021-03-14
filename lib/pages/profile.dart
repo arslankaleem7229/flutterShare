@@ -66,7 +66,7 @@ class _ProfileState extends State<Profile> {
   buildButton({@required String text, @required Function function}) {
     return Container(
       padding: EdgeInsets.only(top: 2.0),
-      child: FlatButton(
+      child: TextButton(
         onPressed: function,
         child: Container(
           width: 260.0,

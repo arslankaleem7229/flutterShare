@@ -14,11 +14,12 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 final userRef = FirebaseFirestore.instance.collection('users');
 final postRef = FirebaseFirestore.instance.collection('posts');
+final commentRef = FirebaseFirestore.instance.collection('comments');
+final activityFeedRef = FirebaseFirestore.instance.collection('feeds');
 
 final Reference storageReference = FirebaseStorage.instance.ref();
 final GoogleSignIn googleSignIn = GoogleSignIn();
 bool isAuth = false;
-final timeStamp = DateTime.now();
 User currentUser;
 
 class Home extends StatefulWidget {
@@ -108,7 +109,7 @@ class _HomeState extends State<Home> {
         "displayname": user.displayName,
         "username": username,
         "bio": "N/A",
-        "timestamp": timeStamp,
+        "timestamp": DateTime.now(),
       });
       document = await userRef.doc(user.id).get();
     }

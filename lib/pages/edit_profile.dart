@@ -204,12 +204,22 @@ class _EditProfileState extends State<EditProfile> {
                           ],
                         ),
                       ),
-                      RaisedButton(
+                      ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.resolveWith<Color>(
+                            (Set<MaterialState> states) {
+                              if (states.contains(MaterialState.pressed))
+                                return Colors.green;
+                              return null; // Use the component's default.
+                            },
+                          ),
+                        ),
                         onPressed: updateProfile,
                         child: Text(
                           "Update Profile",
                           style: TextStyle(
-                            color: Theme.of(context).primaryColor,
+                            // color: Theme.of(context).primaryColor,
                             fontSize: 20.0,
                             fontWeight: FontWeight.bold,
                           ),
@@ -217,7 +227,7 @@ class _EditProfileState extends State<EditProfile> {
                       ),
                       Padding(
                         padding: EdgeInsets.all(16.0),
-                        child: FlatButton.icon(
+                        child: TextButton.icon(
                           onPressed: logout,
                           icon: Icon(
                             Icons.cancel,

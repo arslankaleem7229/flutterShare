@@ -136,17 +136,22 @@ class _UploadState extends State<Upload> {
           ),
           Padding(
             padding: EdgeInsets.only(top: 20.0),
-            child: RaisedButton(
-              padding: EdgeInsets.fromLTRB(30, 15, 30, 15),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0)),
+            child: ElevatedButton(
+              style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.deepOrange),
+                  padding: MaterialStateProperty.all<EdgeInsets>(
+                      EdgeInsets.fromLTRB(30, 15, 30, 15)),
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0)),
+                  )),
               child: Text(
                 'Upload Image',
                 style: TextStyle(
                   color: Colors.white,
                 ),
               ),
-              color: Colors.deepOrange,
               onPressed: () {
                 selectImage(context);
               },
@@ -203,7 +208,7 @@ class _UploadState extends State<Upload> {
       "mediaURL": mediaURL,
       "description": description,
       "location": location,
-      "timestamp": timeStamp,
+      "timestamp": DateTime.now(),
       "likes": {}
     });
   }
@@ -222,7 +227,7 @@ class _UploadState extends State<Upload> {
         centerTitle: true,
         backgroundColor: Colors.white70,
         actions: [
-          FlatButton(
+          TextButton(
               onPressed: isUploading ? null : () => handleSubmit(),
               child: Text(
                 'Post',
@@ -294,7 +299,7 @@ class _UploadState extends State<Upload> {
           Container(
             height: 100.0,
             alignment: Alignment.center,
-            child: RaisedButton.icon(
+            child: ElevatedButton.icon(
                 icon: Icon(
                   Icons.my_location,
                   color: Colors.white,
@@ -304,9 +309,16 @@ class _UploadState extends State<Upload> {
                     locationController.text = _currentAddress;
                   });
                 },
-                color: Colors.blueAccent,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0)),
+                style: ButtonStyle(
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30.0)),
+                  ),
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.blue),
+                ),
+                // color: Colors.blueAccent,
+
                 label: Text(
                   'User Current Location',
                   style: TextStyle(

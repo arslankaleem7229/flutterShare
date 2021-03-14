@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'pages/home.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -10,7 +12,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Initialize FlutterFire
-    Firebase.initializeApp();
 
     // Once complete, show your application
     return MaterialApp(
@@ -19,6 +20,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         accentColor: Colors.teal,
         primarySwatch: Colors.purple,
+        // canvasColor: Colors.transparent,
       ),
       home: Home(),
     );
