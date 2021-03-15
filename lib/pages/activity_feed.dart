@@ -1,9 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttershare/pages/comments.dart';
 import 'package:fluttershare/pages/home.dart';
+import 'package:fluttershare/pages/post_screen.dart';
+import 'package:fluttershare/pages/profile.dart';
 import 'package:fluttershare/widgets/header.dart';
 import 'package:fluttershare/widgets/progress.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class ActivityFeed extends StatefulWidget {
   @override
@@ -11,17 +15,21 @@ class ActivityFeed extends StatefulWidget {
 }
 
 class _ActivityFeedState extends State<ActivityFeed> {
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   getActivityFeed() async {
     QuerySnapshot snapshot = await activityFeedRef
         .doc(currentUser.id)
         .collection("feedItems")
-        .orderBy("timeStamp", descending: false)
+        .orderBy("timeStamp", descending: true)
         .limit(50)
         .get();
 
     List<ActivityFeedItem> activities = [];
     snapshot.docs.forEach((document) {
-      print(document.data());
       activities.add(ActivityFeedItem.fromDocument(document));
     });
     return activities;
@@ -39,22 +47,20 @@ class _ActivityFeedState extends State<ActivityFeed> {
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
                 return circularProgress();
-              } else {
-                print(snapshot.data);
-                return ListView(
-                  reverse: true,
-                  shrinkWrap: true,
-                  children: snapshot.data,
-                );
               }
+              return ListView(
+                // reverse: true,
+                // shrinkWrap: true,
+                children: snapshot.data,
+              );
             },
           ),
         ));
   }
 }
 
-Widget mediaPreview;
-String activityItemText;
+Widget _mediaPreview;
+String _activityItemText;
 
 class ActivityFeedItem extends StatelessWidget {
   final String postId;
@@ -83,17 +89,32 @@ class ActivityFeedItem extends StatelessWidget {
       postId: doc["postId"],
       userProfileImg: doc["userProfileImg"],
       type: doc["type"],
-      timestamp: doc["timestamp"],
+      timestamp: doc["timeStamp"],
       userId: doc["userId"],
       username: doc['username'],
+      mediaUrl: doc["mediaUrl"],
       commentId: doc.id,
       commentData: doc["commentData"],
     );
   }
-  configgureMediaPreview() {
+  _showPost({@required context}) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PostScreen(
+          postId: postId,
+          userId: userId,
+        ),
+      ),
+    );
+  }
+
+  _configgureMediaPreview({@required context}) {
     if (type == 'like' || type == 'comment') {
-      mediaPreview = GestureDetector(
-        onTap: () => print("Showing Post"),
+      _mediaPreview = GestureDetector(
+        onTap: () {
+          _showPost(context: context);
+        },
         child: Container(
           height: 50.0,
           width: 50.0,
@@ -111,7 +132,7 @@ class ActivityFeedItem extends StatelessWidget {
         ),
       );
     } else {
-      mediaPreview = Container(
+      _mediaPreview = Container(
         height: 50.0,
         width: 50.0,
         child: AspectRatio(
@@ -128,37 +149,75 @@ class ActivityFeedItem extends StatelessWidget {
       );
     }
     if (type == 'like') {
-      activityItemText = "liked your post";
+      _activityItemText = "liked your post";
     } else if (type == 'comment') {
-      activityItemText = "commented: $commentData";
+      _activityItemText = "commented: $commentData";
     } else if (type == 'follow') {
-      activityItemText = "is following you";
+      _activityItemText = "is following you";
     } else {
-      activityItemText = "Error: Unknown type $type";
+      _activityItemText = "Error: Unknown type $type";
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    configgureMediaPreview();
+    _configgureMediaPreview(context: context);
 
     return Padding(
       padding: EdgeInsets.only(bottom: 2.0),
       child: Container(
         color: Colors.white54,
         child: ListTile(
-          leading: CircleAvatar(
-            backgroundImage: CachedNetworkImageProvider(userProfileImg),
-          ),
-          title: GestureDetector(
-            onTap: () => print("show Profile"),
-            child: RichText(
-              overflow: TextOverflow.ellipsis,
-              text: TextSpan(style: TextStyle(fontSize:14.0)),
+          leading: GestureDetector(
+            onTap: () => _showProfile(context, profileId: userId),
+            child: CircleAvatar(
+              backgroundImage: CachedNetworkImageProvider(userProfileImg),
             ),
           ),
+          title: GestureDetector(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => Comments(
+                            postId: postId,
+                            postMediaUrl: mediaUrl,
+                            postOwnerId: userId,
+                          )));
+            },
+            child: RichText(
+              overflow: TextOverflow.ellipsis,
+              text: TextSpan(
+                style: TextStyle(fontSize: 14.0, color: Colors.black),
+                children: [
+                  TextSpan(
+                    text: username,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  TextSpan(
+                    text: " $_activityItemText",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          subtitle: Text(
+            timeago.format(timestamp.toDate()),
+            overflow: TextOverflow.ellipsis,
+          ),
+          trailing: _mediaPreview,
         ),
       ),
     );
   }
+}
+
+_showProfile(BuildContext context, {String profileId}) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => Profile(profileId: profileId),
+    ),
+  );
 }

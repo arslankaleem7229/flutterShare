@@ -21,6 +21,13 @@ class Comments extends StatefulWidget {
 }
 
 class CommentsState extends State<Comments> {
+  @override
+  void dispose() {
+    this.commentsController.dispose();
+
+    super.dispose();
+  }
+
   TextEditingController commentsController = TextEditingController();
   bool _isValid = true;
   final String postId;
@@ -155,15 +162,12 @@ class CommentsState extends State<Comments> {
       if (isNotOwner) {
         addCommentsinActivityFeed(commentsId);
       }
-      setState(() {
-        _isValid = true;
-      });
+      _isValid = true;
+
       FocusScope.of(context).unfocus();
       commentsController.clear();
     } else if (commentsController.text.isEmpty) {
-      setState(() {
-        _isValid = false;
-      });
+      _isValid = false;
     }
   }
 }

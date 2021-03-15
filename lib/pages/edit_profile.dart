@@ -140,9 +140,6 @@ class _EditProfileState extends State<EditProfile> {
         Navigator.pop(context);
       }).catchError((onError) => print(onError));
     }
-
-    // _scaffoldkey
-    //     .showSnackBar(SnackBar(content: Text('Profile Updated')));
   }
 
   @override

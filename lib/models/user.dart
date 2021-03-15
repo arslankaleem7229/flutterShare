@@ -18,7 +18,7 @@ class User {
   });
   factory User.fromDocument(DocumentSnapshot document) {
     return User(
-      id: document.data()['id'],
+      id: document.data()["id"],
       displayName: document.data()['displayname'],
       username: document.data()['username'],
       email: document.data()['email'],

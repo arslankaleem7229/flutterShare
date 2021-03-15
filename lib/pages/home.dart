@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttershare/models/user.dart';
 import 'package:fluttershare/pages/activity_feed.dart';
-import 'package:fluttershare/pages/create_account.dart';
 import 'package:fluttershare/pages/profile.dart';
 import 'package:fluttershare/pages/search.dart';
 // ignore: unused_import
@@ -13,6 +12,8 @@ import 'package:fluttershare/pages/upload.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 final userRef = FirebaseFirestore.instance.collection('users');
+final followersRef = FirebaseFirestore.instance.collection('followers');
+final followingRef = FirebaseFirestore.instance.collection('following');
 final postRef = FirebaseFirestore.instance.collection('posts');
 final commentRef = FirebaseFirestore.instance.collection('comments');
 final activityFeedRef = FirebaseFirestore.instance.collection('feeds');
@@ -97,8 +98,7 @@ class _HomeState extends State<Home> {
 
     //2). if the user doesn't exist, then we want to take them to the create account page.
     if (!document.exists) {
-      final username = await Navigator.push(
-          context, MaterialPageRoute(builder: (context) => CreateAccount()));
+      final username = user.email.substring(0, user.email.indexOf('@'));
 
       //3). get username from create account user it to make new user document in users collection
 
@@ -114,8 +114,8 @@ class _HomeState extends State<Home> {
       document = await userRef.doc(user.id).get();
     }
     currentUser = User.fromDocument(document);
-    print(currentUser);
-    print(currentUser.email);
+    // print(currentUser);
+    // print(currentUser.email.substring(0, user.email.indexOf('@')));
   }
 
   BottomNavigationBarItem bottomNavigationBarItem(Icon icon) {

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttershare/models/user.dart';
 import 'package:fluttershare/pages/home.dart';
+import 'package:fluttershare/pages/profile.dart';
 import 'package:fluttershare/widgets/progress.dart';
 
 final homeController = TextEditingController();
@@ -17,6 +18,7 @@ class _SearchState extends State<Search> {
   handleSearch(String query) {
     Future<QuerySnapshot> user =
         userRef.where('displayname', isGreaterThanOrEqualTo: query).get();
+    // print(user.);
     setState(() {
       searchResultsFuture = user;
     });
@@ -91,6 +93,7 @@ class _SearchState extends State<Search> {
           User user = User.fromDocument(document);
           UserResult userResult = UserResult(user);
           searchResults.add(userResult);
+          print(searchResults);
         });
         return ListView(
           children: searchResults,
@@ -140,6 +143,7 @@ class UserResult extends StatelessWidget {
                     color: Colors.white54, fontWeight: FontWeight.bold),
               ),
             ),
+            onTap: () => _showProfile(context, profileId: user.id),
           ),
           Divider(
             height: 2.0,
@@ -149,4 +153,13 @@ class UserResult extends StatelessWidget {
       ),
     );
   }
+}
+
+_showProfile(BuildContext context, {String profileId}) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => Profile(profileId: profileId),
+    ),
+  );
 }

@@ -18,11 +18,18 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  bool isEmpty = true;
-  String postOrientation = "Grid";
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  bool _isfollowing = false;
+
+  bool _isEmpty = true;
+  String _postOrientation = "Grid";
   List<Post> posts = [];
-  bool isLoading = false;
-  int postCount = 0;
+  bool _isLoading = false;
+  int _postCount = 0;
   User user;
   final String currentUserId = currentUser?.id;
 
@@ -69,25 +76,85 @@ class _ProfileState extends State<Profile> {
       child: TextButton(
         onPressed: function,
         child: Container(
-          width: 260.0,
+          width: MediaQuery.of(context).size.width * 0.65,
           height: 27.0,
           child: Text(
             text,
             style: TextStyle(
-              color: Colors.white,
+              color: _isfollowing ? Colors.black : Colors.white,
               fontWeight: FontWeight.bold,
             ),
           ),
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: Colors.blue,
+            color: _isfollowing ? Colors.white : Colors.blue,
             border: Border.all(
-              color: Colors.blue,
+              color: _isfollowing ? Colors.grey : Colors.blue,
             ),
             borderRadius: BorderRadius.circular(5.0),
           ),
         ),
       ),
+    );
+  }
+
+  handleUnfollowUser() {
+    setState(() {
+      _isfollowing = false;
+    });
+    // upload your id in user followers
+    followersRef
+        .doc(widget.profileId)
+        .collection("userFollowers")
+        .doc(currentUserId)
+        .delete();
+    //update you following by adding user to your following
+    followingRef
+        .doc(currentUserId)
+        .collection('userFollowing')
+        .doc(widget.profileId)
+        .delete();
+    //add activity feed item to notify user about new follower
+    activityFeedRef
+        .doc(widget.profileId)
+        .collection('feedItems')
+        .doc(currentUserId)
+        .delete();
+  }
+
+  handleFollowUser() {
+    setState(() {
+      _isfollowing = true;
+    });
+    // upload your id in user followers
+    followersRef
+        .doc(widget.profileId)
+        .collection("userFollowers")
+        .doc(currentUserId)
+        .set({"isFollow": true});
+    //update you following by adding user to your following
+    followingRef
+        .doc(currentUserId)
+        .collection('userFollowing')
+        .doc(widget.profileId)
+        .set({"isfollowing": true});
+    //add activity feed item to notify user about new follower
+    activityFeedRef
+        .doc(widget.profileId)
+        .collection('feedItems')
+        .doc(currentUserId)
+        .set(
+      {
+        "postId": null,
+        "userProfileImg": currentUser.photoURL,
+        "ownerId": widget.profileId,
+        "type": "follow",
+        "timeStamp": DateTime.now(),
+        "userId": currentUserId,
+        "username": currentUser.username,
+        "mediaUrl": null,
+        "commentData": null,
+      },
     );
   }
 
@@ -98,9 +165,11 @@ class _ProfileState extends State<Profile> {
         text: "Edit Profile",
         function: editProfile,
       );
+    } else if (_isfollowing) {
+      return buildButton(text: "Unfollow", function: handleUnfollowUser);
+    } else {
+      return buildButton(text: "Follow", function: handleFollowUser);
     }
-
-    return Text('Profile Button');
   }
 
   buildProfileHeader() {
@@ -111,6 +180,7 @@ class _ProfileState extends State<Profile> {
             return circularProgress();
           } else {
             user = User.fromDocument(snapshots.data);
+
             return Padding(
               padding: EdgeInsets.all(16.0),
               child: Column(
@@ -120,7 +190,7 @@ class _ProfileState extends State<Profile> {
                     children: [
                       CircleAvatar(
                         backgroundColor: Colors.grey,
-                        radius: 40.0,
+                        radius: MediaQuery.of(context).size.width * 0.1,
                         backgroundImage: CachedNetworkImageProvider(
                           user.photoURL,
                         ),
@@ -134,7 +204,7 @@ class _ProfileState extends State<Profile> {
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 buildCountColumn(
-                                    label: "posts", count: postCount),
+                                    label: "posts", count: _postCount),
                                 buildCountColumn(label: "followers", count: 0),
                                 buildCountColumn(label: "following", count: 0),
                               ],
@@ -196,7 +266,7 @@ class _ProfileState extends State<Profile> {
   }
 
   buildProfilePosts() {
-    if (isEmpty) {
+    if (_isEmpty) {
       return Container(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -221,9 +291,9 @@ class _ProfileState extends State<Profile> {
         ),
       );
     } else {
-      if (isLoading == true) {
+      if (_isLoading == true) {
         return circularProgress();
-      } else if (equalsIgnoreCase(postOrientation, "Grid")) {
+      } else if (equalsIgnoreCase(_postOrientation, "Grid")) {
         List<GridTile> gridTiles = [];
         posts.forEach((post) {
           gridTiles.add(GridTile(child: PostTile(post)));
@@ -247,7 +317,7 @@ class _ProfileState extends State<Profile> {
 
   getProfilePosts() async {
     setState(() {
-      isLoading = true;
+      _isLoading = true;
     });
     QuerySnapshot querySnapshot = await postRef
         .doc(widget.profileId)
@@ -256,12 +326,12 @@ class _ProfileState extends State<Profile> {
         .get();
 
     setState(() {
-      isLoading = false;
-      postCount = querySnapshot.docs.length;
-      if (postCount == 0) {
-        isEmpty = true;
+      _isLoading = false;
+      _postCount = querySnapshot.docs.length;
+      if (_postCount == 0) {
+        _isEmpty = true;
       } else {
-        isEmpty = false;
+        _isEmpty = false;
       }
       posts = querySnapshot.docs.map((doc) => Post.fromDocument(doc)).toList();
     });
@@ -295,13 +365,13 @@ class _ProfileState extends State<Profile> {
           icon: Icon(
             Icons.grid_on_rounded,
             size: 30.0,
-            color: postOrientation == "Grid"
+            color: _postOrientation == "Grid"
                 ? Theme.of(context).primaryColor
                 : Colors.grey,
           ),
           onPressed: () {
             setState(() {
-              postOrientation = "Grid";
+              _postOrientation = "Grid";
             });
           },
         ),
@@ -309,13 +379,13 @@ class _ProfileState extends State<Profile> {
           icon: Icon(
             Icons.list,
             size: 30.0,
-            color: postOrientation != "Grid"
+            color: _postOrientation != "Grid"
                 ? Theme.of(context).primaryColor
                 : Colors.grey,
           ),
           onPressed: () {
             setState(() {
-              postOrientation = "List";
+              _postOrientation = "List";
             });
           },
         ),

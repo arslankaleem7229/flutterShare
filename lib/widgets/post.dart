@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttershare/models/user.dart';
 import 'package:fluttershare/pages/comments.dart';
 import 'package:fluttershare/pages/home.dart';
+import 'package:fluttershare/pages/profile.dart';
 import 'package:fluttershare/widgets/custom_image.dart';
 import 'package:fluttershare/widgets/progress.dart';
 
@@ -70,6 +71,11 @@ class Post extends StatefulWidget {
 }
 
 class _PostState extends State<Post> {
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   final String _currentUserId = currentUser?.id;
   final String postId;
   final String ownerId;
@@ -120,7 +126,7 @@ class _PostState extends State<Post> {
               backgroundColor: Colors.grey,
             ),
             title: GestureDetector(
-              onTap: () => print("Showing Profile"),
+              onTap: () => _showProfile(context, profileId: user.id),
               child: Text(
                 this.username,
                 style: TextStyle(
@@ -165,6 +171,15 @@ class _PostState extends State<Post> {
                 )
               : Text(""),
         ],
+      ),
+    );
+  }
+
+  _showProfile(BuildContext context, {String profileId}) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Profile(profileId: profileId),
       ),
     );
   }
@@ -239,7 +254,7 @@ class _PostState extends State<Post> {
               ),
             ),
             Expanded(
-              child: Text(description),
+              child: Text(" " + description),
             ),
           ],
         )
@@ -251,6 +266,7 @@ class _PostState extends State<Post> {
     bool isNotPostOwner = _currentUserId != ownerId;
     if (isNotPostOwner) {
       activityFeedRef.doc(ownerId).collection('feedItems').doc(postId).set({
+        "commentData": null,
         "type": "like",
         "username": currentUser.username,
         "userId": currentUser.id,
