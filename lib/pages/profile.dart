@@ -23,13 +23,15 @@ class _ProfileState extends State<Profile> {
     super.dispose();
   }
 
-  bool _isfollowing = false;
+  bool _isfollowing;
 
   bool _isEmpty = true;
   String _postOrientation = "Grid";
   List<Post> posts = [];
   bool _isLoading = false;
   int _postCount = 0;
+  int _followerCount = 0;
+  int _followingCount = 0;
   User user;
   final String currentUserId = currentUser?.id;
 
@@ -98,48 +100,54 @@ class _ProfileState extends State<Profile> {
     );
   }
 
-  handleUnfollowUser() {
+  handleUnfollowUser() async {
     setState(() {
       _isfollowing = false;
     });
     // upload your id in user followers
-    followersRef
+    await followersRef
         .doc(widget.profileId)
         .collection("userFollowers")
         .doc(currentUserId)
         .delete();
+
     //update you following by adding user to your following
-    followingRef
+    await followingRef
         .doc(currentUserId)
         .collection('userFollowing')
         .doc(widget.profileId)
         .delete();
     //add activity feed item to notify user about new follower
-    activityFeedRef
+    await activityFeedRef
         .doc(widget.profileId)
         .collection('feedItems')
         .doc(currentUserId)
         .delete();
+
+    setState(() {
+      getFollower();
+      getFollowing();
+    });
   }
 
-  handleFollowUser() {
+  handleFollowUser() async {
     setState(() {
       _isfollowing = true;
     });
     // upload your id in user followers
-    followersRef
+    await followersRef
         .doc(widget.profileId)
         .collection("userFollowers")
         .doc(currentUserId)
-        .set({"isFollow": true});
+        .set({});
     //update you following by adding user to your following
-    followingRef
+    await followingRef
         .doc(currentUserId)
         .collection('userFollowing')
         .doc(widget.profileId)
-        .set({"isfollowing": true});
+        .set({});
     //add activity feed item to notify user about new follower
-    activityFeedRef
+    await activityFeedRef
         .doc(widget.profileId)
         .collection('feedItems')
         .doc(currentUserId)
@@ -156,6 +164,10 @@ class _ProfileState extends State<Profile> {
         "commentData": null,
       },
     );
+    setState(() {
+      getFollower();
+      getFollowing();
+    });
   }
 
   buildPerformButton() {
@@ -166,8 +178,11 @@ class _ProfileState extends State<Profile> {
         function: editProfile,
       );
     } else if (_isfollowing) {
+      print(_isfollowing);
       return buildButton(text: "Unfollow", function: handleUnfollowUser);
     } else {
+      print(_isfollowing);
+
       return buildButton(text: "Follow", function: handleFollowUser);
     }
   }
@@ -205,8 +220,10 @@ class _ProfileState extends State<Profile> {
                               children: [
                                 buildCountColumn(
                                     label: "posts", count: _postCount),
-                                buildCountColumn(label: "followers", count: 0),
-                                buildCountColumn(label: "following", count: 0),
+                                buildCountColumn(
+                                    label: "followers", count: _followerCount),
+                                buildCountColumn(
+                                    label: "following", count: _followingCount),
                               ],
                             ),
                             Row(
@@ -259,6 +276,9 @@ class _ProfileState extends State<Profile> {
   void initState() {
     super.initState();
     getProfilePosts();
+    getFollower();
+    getFollowing();
+    checkIffollowing();
   }
 
   bool equalsIgnoreCase(String string1, String string2) {
@@ -391,5 +411,36 @@ class _ProfileState extends State<Profile> {
         ),
       ],
     );
+  }
+
+  checkIffollowing() async {
+    DocumentSnapshot _documentSnapshot = await followingRef
+        .doc(currentUserId)
+        .collection('userFollowing')
+        .doc(widget.profileId)
+        .get();
+    setState(() {
+      _isfollowing = _documentSnapshot.exists;
+    });
+  }
+
+  getFollowing() async {
+    final following = await followingRef
+        .doc(widget.profileId)
+        .collection('userFollowing')
+        .get();
+    setState(() {
+      _followingCount = following.docs.length;
+    });
+  }
+
+  getFollower() async {
+    final follow = await followersRef
+        .doc(widget.profileId)
+        .collection('userFollowers')
+        .get();
+    setState(() {
+      _followerCount = follow.docs.length;
+    });
   }
 }

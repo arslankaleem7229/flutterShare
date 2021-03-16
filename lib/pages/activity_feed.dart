@@ -1,10 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttershare/models/showProfile.dart';
 import 'package:fluttershare/pages/comments.dart';
 import 'package:fluttershare/pages/home.dart';
 import 'package:fluttershare/pages/post_screen.dart';
-import 'package:fluttershare/pages/profile.dart';
 import 'package:fluttershare/widgets/header.dart';
 import 'package:fluttershare/widgets/progress.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -169,7 +169,7 @@ class ActivityFeedItem extends StatelessWidget {
         color: Colors.white54,
         child: ListTile(
           leading: GestureDetector(
-            onTap: () => _showProfile(context, profileId: userId),
+            onTap: () => showProfile(context, profileId: userId),
             child: CircleAvatar(
               backgroundImage: CachedNetworkImageProvider(userProfileImg),
             ),
@@ -211,13 +211,4 @@ class ActivityFeedItem extends StatelessWidget {
       ),
     );
   }
-}
-
-_showProfile(BuildContext context, {String profileId}) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => Profile(profileId: profileId),
-    ),
-  );
 }

@@ -4,10 +4,10 @@ import 'package:animator/animator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttershare/models/showProfile.dart';
 import 'package:fluttershare/models/user.dart';
 import 'package:fluttershare/pages/comments.dart';
 import 'package:fluttershare/pages/home.dart';
-import 'package:fluttershare/pages/profile.dart';
 import 'package:fluttershare/widgets/custom_image.dart';
 import 'package:fluttershare/widgets/progress.dart';
 
@@ -126,7 +126,7 @@ class _PostState extends State<Post> {
               backgroundColor: Colors.grey,
             ),
             title: GestureDetector(
-              onTap: () => _showProfile(context, profileId: user.id),
+              onTap: () => showProfile(context, profileId: user.id),
               child: Text(
                 this.username,
                 style: TextStyle(
@@ -171,15 +171,6 @@ class _PostState extends State<Post> {
                 )
               : Text(""),
         ],
-      ),
-    );
-  }
-
-  _showProfile(BuildContext context, {String profileId}) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Profile(profileId: profileId),
       ),
     );
   }
