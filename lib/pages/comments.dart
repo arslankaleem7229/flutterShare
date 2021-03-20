@@ -128,7 +128,6 @@ class CommentsState extends State<Comments> {
   }
 
   addCommentsinActivityFeed(String commentsId) {
-    print(commentsId);
     activityFeedRef
         .doc(postOwnerId)
         .collection('feedItems')

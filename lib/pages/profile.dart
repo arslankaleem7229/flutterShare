@@ -206,11 +206,8 @@ class _ProfileState extends State<Profile> {
         function: editProfile,
       );
     } else if (_isfollowing) {
-      print(_isfollowing);
       return buildButton(text: "Unfollow", function: handleUnfollowUser);
     } else {
-      print(_isfollowing);
-
       return buildButton(text: "Follow", function: handleFollowUser);
     }
   }

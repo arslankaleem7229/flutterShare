@@ -201,7 +201,6 @@ class _PostState extends State<Post> {
             .collection('timelinePosts')
             .doc(postId)
             .delete();
-        print(follower.id);
       }
     });
 
@@ -366,7 +365,6 @@ class _PostState extends State<Post> {
 
   handleLikePost() {
     bool _isLiked = likes[_currentUserId] == true;
-    print(_isLiked);
 
     if (_isLiked) {
       postRef

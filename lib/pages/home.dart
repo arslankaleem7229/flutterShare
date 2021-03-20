@@ -114,8 +114,6 @@ class _HomeState extends State<Home> {
       document = await userRef.doc(user.id).get();
     }
     currentUser = User.fromDocument(document);
-    // print(currentUser);
-    // print(currentUser.email.substring(0, user.email.indexOf('@')));
   }
 
   BottomNavigationBarItem bottomNavigationBarItem(Icon icon) {

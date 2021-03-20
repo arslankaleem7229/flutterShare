@@ -14,7 +14,7 @@ class EditProfile extends StatefulWidget {
 
 class _EditProfileState extends State<EditProfile> {
   bool _isdisable = true;
-  final _scaffoldkey = GlobalKey<ScaffoldState>();
+  final _scaffoldMessengerkey = GlobalKey<ScaffoldMessengerState>();
   TextEditingController displayNameController = TextEditingController();
   TextEditingController bioController = TextEditingController();
 
@@ -116,7 +116,7 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 
-  updateProfile() {
+  updateProfile({BuildContext snackBarContext}) {
     setState(() {
       displayNameController.text.trim().length < 3 ||
               displayNameController.text.isEmpty
@@ -135,8 +135,8 @@ class _EditProfileState extends State<EditProfile> {
           _isdisable = false;
         });
         SnackBar snackBar = SnackBar(content: Text('Profile Updated'));
-        // ignore: deprecated_member_use
-        _scaffoldkey.currentState.showSnackBar(snackBar);
+
+        ScaffoldMessenger.of(snackBarContext).showSnackBar(snackBar);
         Navigator.pop(context);
       }).catchError((onError) => print(onError));
     }
@@ -144,107 +144,111 @@ class _EditProfileState extends State<EditProfile> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldkey,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text(
-          "Edit Profile",
-          style: TextStyle(
-            color: Colors.black,
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.done,
-              color: Colors.green,
-              size: 30.0,
+    return ScaffoldMessenger(
+      key: _scaffoldMessengerkey,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          title: Text(
+            "Edit Profile",
+            style: TextStyle(
+              color: Colors.black,
             ),
-            onPressed: () => _isdisable ? null : Navigator.pop(context),
-          )
-        ],
-      ),
-      body: isLoading
-          ? circularProgress()
-          : ListView(
-              children: [
-                Container(
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 20.0),
-                        child: CircleAvatar(
-                          backgroundImage: CachedNetworkImageProvider(
-                            user.photoURL,
+          ),
+          actions: [
+            IconButton(
+              icon: Icon(
+                Icons.done,
+                color: Colors.green,
+                size: 30.0,
+              ),
+              onPressed: () => _isdisable ? null : Navigator.pop(context),
+            )
+          ],
+        ),
+        body: isLoading
+            ? circularProgress()
+            : ListView(
+                children: [
+                  Container(
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 20.0),
+                          child: CircleAvatar(
+                            backgroundImage: CachedNetworkImageProvider(
+                              user.photoURL,
+                            ),
+                            radius: 50.0,
                           ),
-                          radius: 50.0,
                         ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Column(
-                          children: [
-                            buildDisplayNameTextField(),
-                            buildBioTextField(),
+                        Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Column(
+                            children: [
+                              buildDisplayNameTextField(),
+                              buildBioTextField(),
 
-                            // buildTextField(
-                            //   text: "Display Name",
-                            //   hintText: "Update Display Name",
-                            //   textEditingController: displayNameController,
-                            // ),
-                            // buildTextField(
-                            //   text: "Bio",
-                            //   hintText: "Update your Bio",
-                            //   textEditingController: bioController,
-                            // ),
-                          ],
-                        ),
-                      ),
-                      ElevatedButton(
-                        style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.resolveWith<Color>(
-                            (Set<MaterialState> states) {
-                              if (states.contains(MaterialState.pressed))
-                                return Colors.green;
-                              return null; // Use the component's default.
-                            },
+                              // buildTextField(
+                              //   text: "Display Name",
+                              //   hintText: "Update Display Name",
+                              //   textEditingController: displayNameController,
+                              // ),
+                              // buildTextField(
+                              //   text: "Bio",
+                              //   hintText: "Update your Bio",
+                              //   textEditingController: bioController,
+                              // ),
+                            ],
                           ),
                         ),
-                        onPressed: updateProfile,
-                        child: Text(
-                          "Update Profile",
-                          style: TextStyle(
-                            // color: Theme.of(context).primaryColor,
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold,
+                        ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.resolveWith<Color>(
+                              (Set<MaterialState> states) {
+                                if (states.contains(MaterialState.pressed))
+                                  return Colors.green;
+                                return null; // Use the component's default.
+                              },
+                            ),
                           ),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: TextButton.icon(
-                          onPressed: logout,
-                          icon: Icon(
-                            Icons.cancel,
-                            color: Colors.red,
-                            // size: 35.0,
-                          ),
-                          label: Text(
-                            "Logout",
+                          onPressed: () {
+                            updateProfile(snackBarContext: context);
+                          },
+                          child: Text(
+                            "Update Profile",
                             style: TextStyle(
-                              color: Colors.red,
+                              // color: Theme.of(context).primaryColor,
                               fontSize: 20.0,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
+                        Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: TextButton.icon(
+                            onPressed: logout,
+                            icon: Icon(
+                              Icons.cancel,
+                              color: Colors.red,
+                              // size: 35.0,
+                            ),
+                            label: Text(
+                              "Logout",
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontSize: 20.0,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+      ),
     );
   }
 }

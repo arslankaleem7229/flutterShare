@@ -13,12 +13,12 @@ class Search extends StatefulWidget {
   _SearchState createState() => _SearchState();
 }
 
-class _SearchState extends State<Search> {
+class _SearchState extends State<Search>
+    with AutomaticKeepAliveClientMixin<Search> {
   Future<QuerySnapshot> searchResultsFuture;
   handleSearch(String query) {
     Future<QuerySnapshot> user =
         userRef.where('displayname', isGreaterThanOrEqualTo: query).get();
-    // print(user.);
     setState(() {
       searchResultsFuture = user;
     });
@@ -93,7 +93,6 @@ class _SearchState extends State<Search> {
           User user = User.fromDocument(document);
           UserResult userResult = UserResult(user);
           searchResults.add(userResult);
-          print(searchResults);
         });
         return ListView(
           children: searchResults,
@@ -102,8 +101,11 @@ class _SearchState extends State<Search> {
     );
   }
 
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       backgroundColor: Colors.deepPurple.withOpacity(0.8),
       appBar: buildSearchField(),

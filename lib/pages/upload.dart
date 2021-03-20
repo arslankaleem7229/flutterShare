@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttershare/models/user.dart';
 import 'package:fluttershare/pages/home.dart';
-// ignore: unused_import
-import 'package:fluttershare/widgets/progress.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as IM;
@@ -23,7 +21,8 @@ class Upload extends StatefulWidget {
   _UploadState createState() => _UploadState();
 }
 
-class _UploadState extends State<Upload> {
+class _UploadState extends State<Upload>
+    with AutomaticKeepAliveClientMixin<Upload> {
   Position _currentPosition;
   String _currentAddress;
   TextEditingController captionController = TextEditingController();
@@ -54,7 +53,6 @@ class _UploadState extends State<Upload> {
         .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
         .then((Position position) {
       _currentPosition = position;
-
       _getAddressFromLatLng();
     }).catchError((e) {
       print(e);
@@ -78,10 +76,12 @@ class _UploadState extends State<Upload> {
   handleImagefromCamera() async {
     Navigator.pop(context);
     final tempfile = await getImage(1);
-    print(tempfile);
-    setState(() {
-      imageFile = File(tempfile.path);
-    });
+
+    if (tempfile != null) {
+      setState(() {
+        imageFile = File(tempfile.path);
+      });
+    }
   }
 
   handleImagefromGallery() async {
@@ -122,7 +122,6 @@ class _UploadState extends State<Upload> {
 
   Container buildSplashScreen(context) {
     heightofScreen = MediaQuery.of(context).size.height;
-    // ignore: unused_local_variable
     widthofScreen = MediaQuery.of(context).size.height;
     return Container(
       color: Theme.of(context).accentColor.withOpacity(0.6),
@@ -362,8 +361,11 @@ class _UploadState extends State<Upload> {
     );
   }
 
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return imageFile == null ? buildSplashScreen(context) : buildUploadForm();
   }
 }
