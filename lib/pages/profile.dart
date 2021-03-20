@@ -123,6 +123,19 @@ class _ProfileState extends State<Profile> {
         .collection('feedItems')
         .doc(currentUserId)
         .delete();
+    QuerySnapshot gettingPosts = await postRef
+        .doc(widget.profileId)
+        .collection('userPosts')
+        .orderBy('timestamp', descending: true)
+        .get();
+
+    gettingPosts.docs.forEach((post) {
+      timelinePostsRef
+          .doc(currentUserId)
+          .collection('timelinePosts')
+          .doc(post.id)
+          .delete();
+    });
 
     setState(() {
       getFollower();
@@ -164,6 +177,21 @@ class _ProfileState extends State<Profile> {
         "commentData": null,
       },
     );
+
+    QuerySnapshot gettingPosts = await postRef
+        .doc(widget.profileId)
+        .collection('userPosts')
+        .orderBy('timestamp', descending: true)
+        .get();
+
+    gettingPosts.docs.forEach((post) {
+      timelinePostsRef
+          .doc(currentUserId)
+          .collection('timelinePosts')
+          .doc(post.id)
+          .set(post.data());
+    });
+
     setState(() {
       getFollower();
       getFollowing();

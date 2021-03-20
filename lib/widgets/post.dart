@@ -119,6 +119,7 @@ class _PostState extends State<Post> {
           return circularProgress();
         } else {
           User user = User.fromDocument(snapshot.data);
+          bool isPostOwner = _currentUserId == ownerId;
           return ListTile(
             leading: CircleAvatar(
               radius: 23.0,
@@ -136,14 +137,92 @@ class _PostState extends State<Post> {
               ),
             ),
             subtitle: Text(location),
-            trailing: IconButton(
-              onPressed: () => print("Post Option"),
-              icon: Icon(Icons.more_vert),
-            ),
+            trailing: isPostOwner
+                ? IconButton(
+                    onPressed: () => handleDeletePost(context),
+                    icon: Icon(Icons.more_vert),
+                  )
+                : Text(''),
           );
         }
       },
     );
+  }
+
+  handleDeletePost(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return SimpleDialog(
+            title: Text(
+              "Remove this post?",
+            ),
+            children: [
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context);
+                  deletePost();
+                },
+                child: Text(
+                  "Remove",
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  "Cancel",
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
+            ],
+          );
+        });
+  }
+
+  deletePost() async {
+    postRef.doc(ownerId).collection('userPosts').doc(postId).get().then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+    storageReference.child("post_$postId.jpg").delete().then((value) {
+      setState(() {});
+    });
+
+    QuerySnapshot followerSnapshot =
+        await followersRef.doc(ownerId).collection('userFollowers').get();
+    followerSnapshot.docs.forEach((follower) {
+      if (follower.exists) {
+        timelinePostsRef
+            .doc(follower.id)
+            .collection('timelinePosts')
+            .doc(postId)
+            .delete();
+        print(follower.id);
+      }
+    });
+
+    QuerySnapshot activityFeedSnapshot = await activityFeedRef
+        .doc(ownerId)
+        .collection('feedItems')
+        .where('postId', isEqualTo: postId)
+        .get();
+    activityFeedSnapshot.docs.forEach((activity) {
+      if (activity.exists) {
+        activity.reference.delete();
+      }
+    });
+    QuerySnapshot commentSnapshot =
+        await commentRef.doc(postId).collection('comments').get();
+
+    commentSnapshot.docs.forEach((comment) {
+      if (comment.exists) {
+        comment.reference.delete();
+      }
+    });
   }
 
   buildPostImage() {
@@ -294,6 +373,25 @@ class _PostState extends State<Post> {
           .collection('userPosts')
           .doc(postId)
           .update({'likes.$_currentUserId': false});
+      followersRef
+          .doc(ownerId)
+          .collection('userFollowers')
+          .get()
+          .then((followers) {
+        followers.docs.forEach((follower) {
+          if (follower.exists) {
+            print(follower.id);
+            print(postId);
+            print(_currentUserId);
+            timelinePostsRef
+                .doc(follower.id)
+                .collection('timelinePosts')
+                .doc(postId)
+                .update({'likes.$_currentUserId': false});
+          }
+        });
+      });
+
       removeLikesFromActivityFeed();
       setState(() {
         likeCount -= 1;
@@ -306,6 +404,24 @@ class _PostState extends State<Post> {
           .collection('userPosts')
           .doc(postId)
           .update({'likes.$_currentUserId': true});
+      followersRef
+          .doc(ownerId)
+          .collection('userFollowers')
+          .get()
+          .then((followers) {
+        followers.docs.forEach((follower) {
+          if (follower.exists) {
+            print(follower.id);
+            print(postId);
+            print(_currentUserId);
+            timelinePostsRef
+                .doc(follower.id)
+                .collection('timelinePosts')
+                .doc(postId)
+                .update({'likes.$_currentUserId': false});
+          }
+        });
+      });
       addLikestoActivityFeed();
 
       setState(() {

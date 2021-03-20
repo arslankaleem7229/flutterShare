@@ -210,6 +210,33 @@ class _UploadState extends State<Upload> {
       "location": location,
       "timestamp": DateTime.now(),
       "likes": {}
+    }).then((value) {
+      followersRef
+          .doc(currentUser.id)
+          .collection('userFollowers')
+          .get()
+          .then((value) {
+        value.docs.forEach((follower) {
+          if (follower.exists) {
+            timelinePostsRef
+                .doc(follower.id)
+                .collection('timelinePosts')
+                .doc(postID)
+                .set({
+              "postId": postID,
+              "ownerId": widget.currentUser.id,
+              "username": widget.currentUser.username,
+              "mediaURL": mediaURL,
+              "description": description,
+              "location": location,
+              "timestamp": DateTime.now(),
+              "likes": {}
+            }).then((value) {
+              setState(() {});
+            });
+          }
+        });
+      });
     });
   }
 

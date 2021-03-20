@@ -15,6 +15,7 @@ final userRef = FirebaseFirestore.instance.collection('users');
 final followersRef = FirebaseFirestore.instance.collection('followers');
 final followingRef = FirebaseFirestore.instance.collection('following');
 final postRef = FirebaseFirestore.instance.collection('posts');
+final timelinePostsRef = FirebaseFirestore.instance.collection('timeline');
 final commentRef = FirebaseFirestore.instance.collection('comments');
 final activityFeedRef = FirebaseFirestore.instance.collection('feeds');
 
