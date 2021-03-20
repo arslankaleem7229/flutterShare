@@ -53,9 +53,8 @@ class _UploadState extends State<Upload> {
     geolocator
         .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
         .then((Position position) {
-      setState(() {
-        _currentPosition = position;
-      });
+      _currentPosition = position;
+
       _getAddressFromLatLng();
     }).catchError((e) {
       print(e);
@@ -88,11 +87,11 @@ class _UploadState extends State<Upload> {
   handleImagefromGallery() async {
     Navigator.pop(context);
     final tempfile = await getImage(2);
-    print(tempfile);
-
-    setState(() {
-      imageFile = File(tempfile.path);
-    });
+    if (tempfile.toString() != null) {
+      setState(() {
+        imageFile = File(tempfile.path);
+      });
+    }
   }
 
   selectImage(parentcontext) {

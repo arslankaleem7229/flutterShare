@@ -6,7 +6,6 @@ import 'package:fluttershare/models/user.dart';
 import 'package:fluttershare/pages/activity_feed.dart';
 import 'package:fluttershare/pages/profile.dart';
 import 'package:fluttershare/pages/search.dart';
-// ignore: unused_import
 import 'package:fluttershare/pages/timeline.dart';
 import 'package:fluttershare/pages/upload.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -77,9 +76,9 @@ class _HomeState extends State<Home> {
     googleSignIn.signOut();
   }
 
-  handleSignIn(GoogleSignInAccount account) {
+  handleSignIn(GoogleSignInAccount account) async {
     if (account != null) {
-      createUserInFirestore();
+      await createUserInFirestore();
 
       setState(() {
         isAuth = true;
@@ -127,7 +126,9 @@ class _HomeState extends State<Home> {
     return Scaffold(
       body: PageView(
         children: [
-          Timeline(),
+          Timeline(
+            currentUser: currentUser,
+          ),
           ActivityFeed(),
           Upload(
             currentUser: currentUser,
