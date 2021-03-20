@@ -201,8 +201,13 @@ class _UploadState extends State<Upload> {
 
   createPostInFirestore(
       {@required String mediaURL, String description, String location}) {
-    postRef.doc(widget.currentUser.id).collection("userPosts").doc(postID).set({
-      "postId": postID,
+    String specificPostId = postID;
+    postRef
+        .doc(widget.currentUser.id)
+        .collection("userPosts")
+        .doc(specificPostId)
+        .set({
+      "postId": specificPostId,
       "ownerId": widget.currentUser.id,
       "username": widget.currentUser.username,
       "mediaURL": mediaURL,
@@ -221,9 +226,9 @@ class _UploadState extends State<Upload> {
             timelinePostsRef
                 .doc(follower.id)
                 .collection('timelinePosts')
-                .doc(postID)
+                .doc(specificPostId)
                 .set({
-              "postId": postID,
+              "postId": specificPostId,
               "ownerId": widget.currentUser.id,
               "username": widget.currentUser.username,
               "mediaURL": mediaURL,

@@ -366,6 +366,7 @@ class _PostState extends State<Post> {
 
   handleLikePost() {
     bool _isLiked = likes[_currentUserId] == true;
+    print(_isLiked);
 
     if (_isLiked) {
       postRef
@@ -380,9 +381,6 @@ class _PostState extends State<Post> {
           .then((followers) {
         followers.docs.forEach((follower) {
           if (follower.exists) {
-            print(follower.id);
-            print(postId);
-            print(_currentUserId);
             timelinePostsRef
                 .doc(follower.id)
                 .collection('timelinePosts')
@@ -411,14 +409,11 @@ class _PostState extends State<Post> {
           .then((followers) {
         followers.docs.forEach((follower) {
           if (follower.exists) {
-            print(follower.id);
-            print(postId);
-            print(_currentUserId);
             timelinePostsRef
                 .doc(follower.id)
                 .collection('timelinePosts')
                 .doc(postId)
-                .update({'likes.$_currentUserId': false});
+                .update({'likes.$_currentUserId': true});
           }
         });
       });
