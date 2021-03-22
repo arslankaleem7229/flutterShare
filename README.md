@@ -1,11 +1,19 @@
 # fluttershare
 
-> Create firebase project
-> add googleservices.json file in project
-> run following commands in terminal
+> 1). Create firebase project
+>
+> 2). Follow steps to create project
+>
+> 3). Link firebase with flutter by adding googleservices.json file in project
+>
+> 4). Run following commands in terminal
+>```
 > $ flutter pub get
+> 
 > $ flutter pub upgrade
+> 
 > $ flutter run
+> ```
 
 Login Page               |  Timeline               | Activity Feed               |  Upload Page
 :-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
