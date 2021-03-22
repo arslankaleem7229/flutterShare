@@ -1,16 +1,18 @@
 # fluttershare
 
-A new Flutter project.
+A working duplicate instagram written in Flutter using Firebase auth,Firestore and storage.
 
-## Getting Started
+Built with Flutter 
 
-This project is a starting point for a Flutter application.
+<br />
+<br />
 
-A few resources to get you started if this is your first Flutter project:
+Login Page               |  Timeline               | Activity Feed               |  Upload Page
+:-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
+![](https://github.com/arslankaleem7229/flutterShare/blob/master/assets/Screenshots/Screenshot_1616430899.png?raw=true)|![](https://github.com/arslankaleem7229/flutterShare/blob/master/assets/Screenshots/Screenshot_1616429210.png?raw=true)|![](https://github.com/arslankaleem7229/flutterShare/blob/master/assets/Screenshots/Screenshot_1616429289.png?raw=true)|![](https://github.com/arslankaleem7229/flutterShare/blob/master/assets/Screenshots/Screenshot_1616429274.png?raw=true)|
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Search          |  Profile       |   Edit Profile               |  Home Page
+:-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
+![](https://github.com/arslankaleem7229/flutterShare/blob/master/assets/Screenshots/Screenshot_1616429295.png?raw=true)|![](https://github.com/arslankaleem7229/flutterShare/blob/master/assets/Screenshots/Screenshot_1616429259.png?raw=true)|
+![](https://github.com/arslankaleem7229/flutterShare/blob/master/assets/Screenshots/Screenshot_1616429264.png?raw=true)|
+![](https://github.com/arslankaleem7229/flutterShare/blob/master/assets/Screenshots/Screenshot_1616429221.png?raw=true)|
