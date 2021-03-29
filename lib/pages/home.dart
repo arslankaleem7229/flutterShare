@@ -184,7 +184,7 @@ class _HomeState extends State<Home> {
                     style: TextStyle(
                       color: Colors.deepOrange,
                       fontFamily: 'Signatra',
-                      fontSize: 90.0,
+                      fontSize: 75.0,
                     ),
                   ),
                 ),
