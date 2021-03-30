@@ -8,6 +8,7 @@ import 'package:fluttershare/pages/background_painter.dart';
 import 'package:fluttershare/pages/profile.dart';
 import 'package:fluttershare/pages/search.dart';
 import 'package:fluttershare/pages/timeline.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:fluttershare/pages/upload.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -179,12 +180,37 @@ class _HomeState extends State<Home> {
                 child: Container(
                   margin: EdgeInsets.symmetric(horizontal: 20),
                   width: 175,
-                  child: Text(
-                    'FlutterShare',
-                    style: TextStyle(
-                      color: Colors.deepOrange,
-                      fontFamily: 'Signatra',
-                      fontSize: 75.0,
+                  child: SizedBox(
+                    child: DefaultTextStyle(
+                      style: TextStyle(
+                        color: Colors.deepOrange,
+                        fontFamily: 'Signatra',
+                        fontSize: 75.0,
+                      ),
+                      child: AnimatedTextKit(
+                        totalRepeatCount: 1,
+                        animatedTexts: [
+                          TyperAnimatedText(
+                            'Flutter\nShare',
+                            speed: Duration(milliseconds: 100),
+                          ),
+                          ColorizeAnimatedText(
+                            'Flutter\nShare',
+                            textStyle: TextStyle(
+                              color: Colors.deepOrange,
+                              fontFamily: 'Signatra',
+                              fontSize: 75.0,
+                            ),
+                            colors: [
+                              Colors.deepOrange,
+                              Colors.blue,
+                              Colors.yellow,
+                              Colors.red,
+                            ],
+                          ),
+                        ],
+                        isRepeatingAnimation: true,
+                      ),
                     ),
                   ),
                 ),
