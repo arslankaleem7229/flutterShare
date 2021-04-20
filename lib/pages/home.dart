@@ -247,95 +247,9 @@ class _HomeState extends State<Home> {
               ),
             ],
           ),
-          // Center(
-          // child: Text(
-          //   'FlutterShare',
-          //   style: TextStyle(
-          //     color: Colors.black,
-          //     fontFamily: 'Signatra',
-          //     fontSize: 90.0,
-          //   ),
-          // ),
-          // ),
-          // Container(
-          //   padding: EdgeInsets.all(4),
-          //   child: OutlinedButton.icon(
-          //     label: Text(
-          //       'Sign In With Google',
-          //       style: TextStyle(
-          //           fontWeight: FontWeight.bold,
-          //           fontSize: 20,
-          //           color: Colors.black),
-          //     ),
-          //     style: ButtonStyle(
-          //       shape:
-          //           MaterialStateProperty.all<StadiumBorder>(StadiumBorder()),
-          //       padding: MaterialStateProperty.all<EdgeInsets>(
-          //           EdgeInsets.symmetric(horizontal: 12, vertical: 8)),
-          //     ),
-          //     icon: FaIcon(FontAwesomeIcons.google, color: Colors.red),
-          //     onPressed: () {},
-          //   ),
-          // ),
-          // GestureDetector(
-          //   onTap: login,
-          //   child: Container(
-          //     width: 260.0,
-          //     height: 60.0,
-          //     decoration: BoxDecoration(
-          //       image: DecorationImage(
-          //         image: AssetImage('assets/images/google_signin_button.png'),
-          //         fit: BoxFit.contain,
-          //       ),
-          //     ),
-          //   ),
-          // ),
         ],
       ),
     );
-    //  Scaffold(
-    //   body: Container(
-    //     decoration: BoxDecoration(
-    //       gradient: LinearGradient(
-    //         begin: Alignment.topRight,
-    //         end: Alignment.bottomLeft,
-    //         colors: [
-    //           Theme.of(context).accentColor,
-    //           Theme.of(context).primaryColor,
-    //         ],
-    //       ),
-    //     ),
-    //     child: Column(
-    //       mainAxisAlignment: MainAxisAlignment.center,
-    //       crossAxisAlignment: CrossAxisAlignment.stretch,
-    //       children: <Widget>[
-    //         Center(
-    //           child: Text(
-    //             'FlutterShare',
-    //             style: TextStyle(
-    //               color: Colors.black,
-    //               fontFamily: 'Signatra',
-    //               fontSize: 90.0,
-    //             ),
-    //           ),
-    //         ),
-    //         GestureDetector(
-    //           onTap: login,
-    //           child: Container(
-    //             width: 260.0,
-    //             height: 60.0,
-    //             decoration: BoxDecoration(
-    //               image: DecorationImage(
-    //                 image: AssetImage('assets/images/google_signin_button.png'),
-    //                 fit: BoxFit.contain,
-    //               ),
-    //             ),
-    //           ),
-    //         ),
-    //       ],
-    //     ),
-    //   ),
-    // );
   }
 
   @override
